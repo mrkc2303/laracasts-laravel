@@ -81,7 +81,7 @@ Route::patch('/jobs/{id}', function ($id) {
 
     // update the job and persist
 
-    $job = Job::find($id);
+    $job = Job::findOrFail($id); // We used find or fail because what if I patch the URL req to update id 10000 which doesn't exist, it will crash my app hence findOrFail would fail in this senario
 
     $job->title = request('title');
     $job->salary = request('salary');
@@ -94,16 +94,25 @@ Route::patch('/jobs/{id}', function ($id) {
 
     // redierct to the job page
 
-
+    return redirect('/jobs/', $job->id);
 
 });
 
 Route::delete('/jobs/{id}', function ($id) {
+    // validate
     request() -> validate([
         'title'=> ['required', 'min:3'],
         'salary'=> ['required']
     ]);
 
+
+    // authorize (Oh Hold....)
+
+    // delete the job
+
+    Job::findOrFail($id)->delete();;
+
+    return redirect('/jobs');
 
 });
 
